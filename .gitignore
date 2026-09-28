@@ -1,7 +1,23 @@
+# Dependencies and build output
 node_modules/
 dist/
+*.tsbuildinfo
+
+# Test output (Playwright screenshots, traces, reports)
 test-results/
 playwright-report/
-*.log
-.DS_Store
+blob-report/
+coverage/
+
+# Python tools
 __pycache__/
+*.pyc
+.venv/
+
+# Editors, OS and local settings
+.DS_Store
+.idea/
+.vscode/
+*.log
+.env
+.env.*

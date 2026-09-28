@@ -23,7 +23,7 @@ KP = np.array([100, 100, 100, 150, 40, 40, 100, 100, 100, 150, 40, 40], dtype=np
 KD = np.array([2, 2, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2], dtype=np.float64)
 DEFAULT = np.array([-0.1, 0, 0, 0.3, -0.2, 0, -0.1, 0, 0, 0.3, -0.2, 0], dtype=np.float64)
 # Joint effort limits (N·m) from Unitree's g1_12dof.urdf
-TORQUE_LIMIT = np.array([88, 88, 88, 139, 50, 50, 88, 88, 88, 139, 50, 50], dtype=np.float64)
+TORQUE_LIMIT = np.array([88, 139, 88, 139, 50, 50, 88, 139, 88, 139, 50, 50], dtype=np.float64)
 SIM_DT, DECIMATION, GAIT_PERIOD = 0.002, 10, 0.8
 
 SCENE = """<mujoco model="g1 reference">

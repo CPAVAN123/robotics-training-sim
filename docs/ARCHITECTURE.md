@@ -40,7 +40,7 @@ lessons) runs in the student's browser; there is no server.
 | Robot | Source | Control |
 |---|---|---|
 | Unitree G1 humanoid (12 leg joints) | `unitree_rl_gym` `g1_12dof.xml` (BSD-3) | Pretrained policy `public/policies/g1_walk.json` (exported by `tools/export_g1_policy.py`), observation layout and gains from Unitree's `deploy_mujoco/configs/g1.yaml`, torque limits from Unitree's URDF (88/139/50 N·m) |
-| Unitree Go2 quadruped | MuJoCo Menagerie `unitree_go2` (BSD-3) | Model-based trot gait with PD joint control, torque limits from the MJCF (23.7 / 45.43 N·m) |
+| Unitree Go2 quadruped | MuJoCo Menagerie `unitree_go2` (BSD-3) | Model-based trot gait with PD joint control, torque limits from the MJCF (23.7 / 45.43 N·m). A speed governor scales the command down when weak motors (low `motorStrength`) could not swing the legs fast enough. Tuned in its Python twin `tools/go2_gait_lab.py`. |
 
 G1 observation (47 values, 50 Hz), exactly as Unitree's `deploy_mujoco.py`:
 `[ω·0.25 (3), projected gravity (3), cmd·[2,2,0.25] (3), q−q_default (12), q̇·0.05 (12),
@@ -71,15 +71,19 @@ Action → target joint angle `q_default + 0.25·action`; torque `kp(q*−q) −
 * `friction`: sets the sliding friction of every geom (MuJoCo uses the max of the pair, so all geoms must change).
 * `payloadKg`: adds mass to the base body (scaling its inertia to match), like a backpack.
 * `motorStrength`: scales torque limits and PD stiffness together, like weaker or stronger motors.
-* `sensorNoise`: Gaussian noise on what the controller *sees* (gyro 0.2 rad/s·k, gravity vector 0.05·k,
-  joint angle 0.01 rad·k, joint speed 1.5 rad/s·k), never on the true physics state.
+* `sensorNoise`: uniform noise in ±a·k on what the controller *sees*, with legged_gym's training amplitudes
+  (gyro 0.2 rad/s, gravity vector 0.05, joint angle 0.01 rad, joint speed 1.5 rad/s; `src/robots/noise.ts`),
+  and for the Go2 its base-velocity estimate ±0.1 m/s·k; never on the true physics state.
 * `timeScale`: slow motion for watching what happens.
 
 ## Lessons (students first)
 
 1. **Meet the robot**: what motors, joints and sensors are; walk to the first checkpoint.
 2. **Obstacle course**: reach checkpoints in order; timer, falls and a star score.
-3. **Push recovery**: pushes of increasing strength; how balance and stepping work.
+3. **Push recovery**: four gentle pushes, three hard ones that are only safe on the robot's strong side, and one
+   that is too strong; how balance and stepping work.
 4. **Physics lab**: change friction, payload, motor strength and sensor noise and see why robots fail.
 
 Each lesson has a plain-language explanation panel, a goal, live feedback and a result screen.
+
+Licences and attribution for the models, the policy and the libraries: [THIRD_PARTY.md](THIRD_PARTY.md).
