@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Drive real robot models (Unitree G1 humanoid and Go2 robot dog) in a physics simulator and learn how robots balance, walk and fall." />
+    <meta name="theme-color" content="#0d1424" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <title>Robotics Training Sim</title>
+  </head>
+  <body>
+    <div id="app">
+      <section aria-label="3D view">
+        <canvas id="view" aria-label="3D view of the robot in the warehouse. Drag to look around, scroll to zoom." role="img"></canvas>
+      </section>
+      <noscript>
+        <p style="padding: 24px; color: #0d1424">Robotics Training Sim needs JavaScript to run.</p>
+      </noscript>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
