@@ -11,6 +11,7 @@ export interface LessonScreenHandlers {
   act(actionId: string): void;
   explain(): void;
   help(): void;
+  handbook(): void;
   togglePause(): void;
   reset(): void;
   togglePushMenu(): void;
@@ -82,6 +83,7 @@ export class LessonScreen {
         this.balanceBtn,
         this.cameraBtn,
         this.demoBtn,
+        tool('Handbook', ICONS.info, () => handlers.handbook(), 'I'),
         tool('Controls', ICONS.keyboard, () => handlers.help(), 'H'),
       ),
     );

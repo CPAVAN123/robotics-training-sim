@@ -15,7 +15,7 @@ import type { KnobKey, LessonHost, LessonId, LessonResult, LessonView, Tone } fr
 import { SceneView } from '../render/view';
 import { waypointCommand } from '../robots/autopilot';
 import { ROBOTS } from '../robots/registry';
-import { ExplainDialog, HelpDialog, ResultDialog } from './dialogs';
+import { ExplainDialog, HandbookDialog, HelpDialog, ResultDialog } from './dialogs';
 import { HomeScreen } from './home';
 import { Hud } from './hud';
 import { LabPanel } from './labPanel';
@@ -74,6 +74,7 @@ export class App {
   private readonly pushMenu: PushMenu;
   private readonly explain = new ExplainDialog();
   private readonly help = new HelpDialog();
+  private readonly handbook = new HandbookDialog();
   private readonly result: ResultDialog;
 
   constructor(
@@ -88,12 +89,14 @@ export class App {
       selectRobot: (id) => void this.selectRobot(id),
       startLesson: (id) => this.startLesson(id),
       openHelp: () => this.openDialog(this.help),
+      openHandbook: () => this.openHandbook(),
     });
     this.lessonScreen = new LessonScreen({
       exit: () => this.exitLesson(),
       act: (id) => this.runner?.act(id),
       explain: () => this.openExplain(),
       help: () => this.openDialog(this.help),
+      handbook: () => this.openHandbook(),
       togglePause: () => this.togglePause(),
       reset: () => this.resetRobot(),
       togglePushMenu: () => this.pushMenu.toggle(),
@@ -118,7 +121,7 @@ export class App {
       },
       home: () => this.exitLesson(),
     });
-    for (const dialog of [this.explain, this.help]) dialog.onClose = () => this.resumeAfterDialog();
+    for (const dialog of [this.explain, this.help, this.handbook]) dialog.onClose = () => this.resumeAfterDialog();
 
     this.root.append(
       this.home.el,
@@ -129,6 +132,7 @@ export class App {
       this.controls.joysticks.el,
       this.explain.el,
       this.help.el,
+      this.handbook.el,
       this.result.el,
       this.loadingOverlay.el,
     );
@@ -343,6 +347,11 @@ export class App {
       else this.openDialog(this.help);
       return;
     }
+    if (action === 'handbook') {
+      if (this.handbook.isOpen) this.handbook.close();
+      else if (!this.anyDialogOpen()) this.openHandbook();
+      return;
+    }
     if (this.anyDialogOpen() || !this.runner || !this.sim) return;
     switch (action) {
       case 'pause':
@@ -407,6 +416,11 @@ export class App {
     this.pauseForDialog();
   }
 
+  private openHandbook(): void {
+    this.handbook.open(this.sim?.robot.id ?? this.robotId);
+    this.pauseForDialog();
+  }
+
   private openDialog(dialog: HelpDialog): void {
     dialog.show();
     this.pauseForDialog();
@@ -428,7 +442,7 @@ export class App {
   }
 
   private anyDialogOpen(): boolean {
-    return this.explain.isOpen || this.help.isOpen || this.result.isOpen;
+    return this.explain.isOpen || this.help.isOpen || this.handbook.isOpen || this.result.isOpen;
   }
 
   private announce(text: string, tone: Tone = 'info'): void {

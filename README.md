@@ -68,6 +68,10 @@ walking robots. The panel on the right (the HUD) shows speed and heading, body t
 the load on every motor, which feet touch the ground and your current command. **Explain** (X)
 opens the physics behind the lesson plus a glossary.
 
+The **Robot handbook** (the button on the home screen, the Handbook tool in a lesson, or the I key) is a
+reference to read at any time: the robot's parts, motors and sensors, how its controller walks, balance
+physics, how the MuJoCo simulator works, and who builds legged robots around the world.
+
 | # | Lesson | What you do | Stars |
 |---|---|---|---|
 | 1 | **Meet the robot** | A four-card tour of joints and motors, sensors (IMU and encoders) and the control loop, one quiz question, then your first walk to a checkpoint 3 m away. | Reach the checkpoint · no falls · quiz right first time |
@@ -92,6 +96,7 @@ where the lesson wants it. **R** resets it at any time, and **Space** pauses.
 | B | Balance view (centre of mass and support polygon) |
 | C | Chase camera on / off |
 | X | Explain panel and glossary |
+| I | Robot handbook |
 | H or ? | Controls help |
 | Esc | Close a panel |
 

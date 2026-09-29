@@ -3,7 +3,7 @@
  */
 import { DRIVE_KEYS } from './mapping';
 
-export type KeyAction = 'pause' | 'reset' | 'pushMenu' | 'push1' | 'push2' | 'push3' | 'help' | 'balance' | 'camera' | 'explain';
+export type KeyAction = 'pause' | 'reset' | 'pushMenu' | 'push1' | 'push2' | 'push3' | 'help' | 'balance' | 'camera' | 'explain' | 'handbook';
 
 /** Action keys by KeyboardEvent.code. */
 export const ACTION_KEYS: Record<string, KeyAction> = {
@@ -21,6 +21,7 @@ export const ACTION_KEYS: Record<string, KeyAction> = {
   KeyB: 'balance',
   KeyC: 'camera',
   KeyX: 'explain',
+  KeyI: 'handbook',
 };
 
 /** Elements that use the keyboard themselves; action keys are left to them. */

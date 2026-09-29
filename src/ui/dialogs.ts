@@ -1,9 +1,11 @@
 /**
  * Modal dialogs (native <dialog>: focus is trapped and Esc closes them): Explain + glossary,
- * controls help, and the lesson result.
+ * the robot handbook, controls help, and the lesson result.
  */
-import type { RobotInfo } from '../core/types';
+import type { RobotId, RobotInfo } from '../core/types';
 import { GLOSSARY } from '../lessons/content';
+import { handbook, type HandbookChapter } from '../lessons/handbook';
+import { ROBOTS } from '../robots/registry';
 import type { LessonDef, LessonResult } from '../lessons/types';
 import { ICONS, append, h, stars, svg } from './dom';
 
@@ -99,6 +101,102 @@ export class ExplainDialog extends Modal {
   }
 }
 
+/** Reference chapters on the robot's parts, control, balance physics and the simulator. */
+export class HandbookDialog extends Modal {
+  private robot: RobotId = 'g1';
+  private chapterId = 'overview';
+  private readonly robotButtons: HTMLButtonElement[];
+  private readonly nav: HTMLElement;
+  private readonly page: HTMLElement;
+
+  constructor() {
+    super('handbook', 'Robot handbook');
+    this.robotButtons = (Object.keys(ROBOTS) as RobotId[]).map((id) =>
+      h('button', { class: 'hb-robot', type: 'button', 'data-handbook-robot': id, 'aria-pressed': 'false', onclick: () => this.setRobot(id) }, ROBOTS[id].name),
+    );
+    this.nav = h('nav', { class: 'handbook-nav', 'aria-label': 'Handbook chapters' });
+    this.page = h('article', { class: 'handbook-page', tabindex: -1, 'aria-live': 'polite' });
+    this.body.classList.add('handbook-body');
+    this.body.append(
+      h('div', { class: 'handbook-robots', role: 'group', 'aria-label': 'Show the handbook for' }, ...this.robotButtons),
+      h('div', { class: 'handbook-layout' }, this.nav, this.page),
+    );
+  }
+
+  open(robot: RobotId): void {
+    this.robot = robot;
+    this.render();
+    this.show();
+  }
+
+  private setRobot(id: RobotId): void {
+    this.robot = id;
+    this.render();
+  }
+
+  private render(): void {
+    const chapters = handbook(this.robot);
+    const chapter = chapters.find((c) => c.id === this.chapterId) ?? chapters[0];
+    this.chapterId = chapter.id;
+    for (const b of this.robotButtons) b.setAttribute('aria-pressed', String(b.dataset.handbookRobot === this.robot));
+    this.nav.replaceChildren(
+      h(
+        'ol',
+        {},
+        ...chapters.map((c) =>
+          h(
+            'li',
+            {},
+            h(
+              'button',
+              {
+                class: 'handbook-link',
+                type: 'button',
+                'aria-current': c.id === chapter.id ? 'page' : null,
+                onclick: () => this.goTo(c.id),
+              },
+              h('span', { class: 'handbook-link-title' }, c.title),
+              h('span', { class: 'handbook-link-summary' }, c.summary),
+            ),
+          ),
+        ),
+      ),
+    );
+    this.page.replaceChildren(...this.renderChapter(chapter, chapters));
+  }
+
+  private renderChapter(chapter: HandbookChapter, chapters: HandbookChapter[]): Node[] {
+    const index = chapters.indexOf(chapter);
+    const prev = chapters[index - 1];
+    const next = chapters[index + 1];
+    return [
+      h('h3', { class: 'handbook-title' }, chapter.title),
+      ...chapter.sections.map((s) =>
+        h(
+          'section',
+          {},
+          h('h4', {}, s.title),
+          ...s.paragraphs.map((p) => h('p', {}, p)),
+          s.facts ? h('dl', { class: 'glossary facts' }, ...s.facts.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])) : null,
+        ),
+      ),
+      h(
+        'div',
+        { class: 'handbook-pager' },
+        prev ? h('button', { class: 'btn', type: 'button', onclick: () => this.goTo(prev.id) }, `← ${prev.title}`) : h('span'),
+        next ? h('button', { class: 'btn primary', type: 'button', onclick: () => this.goTo(next.id) }, `${next.title} →`) : null,
+      ),
+    ];
+  }
+
+  private goTo(id: string): void {
+    this.chapterId = id;
+    this.render();
+    this.page.scrollTop = 0;
+    this.page.focus({ preventScroll: true });
+  }
+}
+
 const KEYS: [string, string][] = [
   ['W / ↑', 'Walk forward'],
   ['S / ↓', 'Walk backward'],
@@ -112,6 +210,7 @@ const KEYS: [string, string][] = [
   ['B', 'Balance view (centre of mass)'],
   ['C', 'Chase camera on / off'],
   ['X', 'Explain panel'],
+  ['I', 'Robot handbook'],
   ['H or ?', 'This help'],
   ['Esc', 'Close a panel'],
 ];

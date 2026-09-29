@@ -14,6 +14,7 @@ export interface HomeHandlers {
   selectRobot(id: RobotId): void;
   startLesson(id: LessonId): void;
   openHelp(): void;
+  openHandbook(): void;
 }
 
 export class HomeScreen {
@@ -39,6 +40,12 @@ export class HomeScreen {
         { class: 'home-header' },
         svg(ICONS.robot, 'home-logo'),
         h('div', {}, h('h1', { id: 'app-title' }, 'Robotics Training Sim'), h('p', { class: 'tagline' }, 'Drive real robot models, feel real physics.')),
+        h(
+          'button',
+          { class: 'btn handbook-open', type: 'button', title: 'How these robots work (I)', onclick: () => handlers.openHandbook() },
+          svg(ICONS.info),
+          'Robot handbook',
+        ),
       ),
       h('h2', { id: 'robot-heading' }, '1. Choose your robot'),
       this.robotList,
